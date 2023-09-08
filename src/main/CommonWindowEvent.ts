@@ -52,6 +52,7 @@ export class CommonWindowEvent {
         modal?: boolean
         parent?: BrowserWindow
         webPreferences: Record<string, boolean>
+        [index: string]: any
       }
       const config: IConfig = {
         frame: false,
@@ -75,8 +76,8 @@ export class CommonWindowEvent {
             config.webPreferences[p2] = features.webPreferences[p2]
           }
         } else {
-          type ReMainKeys = Exclude<keyof IConfig, 'webPreferences'>
-          config[p] = features[p as ReMainKeys]!
+          type RemainKeys = Exclude<keyof IConfig, 'webPreferences'>
+          config[p] = features[p as RemainKeys]
         }
       }
       if (config['modal'] === true) config.parent = win
