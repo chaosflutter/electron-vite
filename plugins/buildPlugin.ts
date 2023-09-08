@@ -1,6 +1,6 @@
 //plugins\buildPlugin.ts
 import path from 'path'
-import fs from 'fs'
+import fs from 'fs-extra'
 
 class BuildObj {
   //编译主进程代码
@@ -19,6 +19,10 @@ class BuildObj {
     let pkgJsonPath = path.join(process.cwd(), 'package.json')
     let localPkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf-8'))
     let electronConfig = localPkgJson.devDependencies.electron.replace('^', '')
+    //版本号是否正确无关紧要
+    localPkgJson.dependencies['better-sqlite3'] = '*'
+    localPkgJson.dependencies['bindings'] = '*'
+    localPkgJson.dependencies['knex'] = '*'
     localPkgJson.main = 'mainEntry.js'
     delete localPkgJson.scripts
     delete localPkgJson.devDependencies
@@ -54,6 +58,82 @@ class BuildObj {
     }
     return require('electron-builder').build(options)
   }
+  //plugins\buildPlugin.ts
+  //import fs from "fs-extra";
+  async prepareSqlite() {
+    //拷贝better-sqlite3
+    let srcDir = path.join(process.cwd(), `node_modules/better-sqlite3`)
+    let destDir = path.join(process.cwd(), `dist/node_modules/better-sqlite3`)
+    fs.ensureDirSync(destDir)
+    fs.copySync(srcDir, destDir, {
+      filter: (src: string) => {
+        if (
+          src.endsWith('better-sqlite3') ||
+          src.endsWith('build') ||
+          src.endsWith('Release') ||
+          src.endsWith('better_sqlite3.node')
+        )
+          return true
+        else if (src.includes('node_modules\\better-sqlite3\\lib')) return true
+        else return false
+      },
+    })
+
+    let pkgJson = `{"name": "better-sqlite3","main": "lib/index.js"}`
+    let pkgJsonPath = path.join(
+      process.cwd(),
+      `dist/node_modules/better-sqlite3/package.json`
+    )
+    fs.writeFileSync(pkgJsonPath, pkgJson)
+    //制作bindings模块
+    let bindingPath = path.join(
+      process.cwd(),
+      `dist/node_modules/bindings/index.js`
+    )
+    fs.ensureFileSync(bindingPath)
+    let bindingsContent = `module.exports = () => {
+let addonPath = require("path").join(__dirname, '../better-sqlite3/build/Release/better_sqlite3.node');
+return require(addonPath);
+};`
+    fs.writeFileSync(bindingPath, bindingsContent)
+
+    pkgJson = `{"name": "bindings","main": "index.js"}`
+    pkgJsonPath = path.join(
+      process.cwd(),
+      `dist/node_modules/bindings/package.json`
+    )
+    fs.writeFileSync(pkgJsonPath, pkgJson)
+  }
+  //plugins\buildPlugin.ts
+  //import fs from "fs-extra";
+  prepareKnexjs() {
+    let pkgJsonPath = path.join(process.cwd(), `dist/node_modules/knex`)
+    fs.ensureDirSync(pkgJsonPath)
+    require('esbuild').buildSync({
+      entryPoints: ['./node_modules/knex/knex.js'],
+      bundle: true,
+      platform: 'node',
+      format: 'cjs',
+      minify: true,
+      outfile: './dist/node_modules/knex/index.js',
+      external: [
+        'oracledb',
+        'pg-query-stream',
+        'pg',
+        'sqlite3',
+        'tedious',
+        'mysql',
+        'mysql2',
+        'better-sqlite3',
+      ],
+    })
+    let pkgJson = `{"name": "bindings","main": "index.js"}`
+    pkgJsonPath = path.join(
+      process.cwd(),
+      `dist/node_modules/knex/package.json`
+    )
+    fs.writeFileSync(pkgJsonPath, pkgJson)
+  }
 }
 
 export let buildPlugin = () => {
@@ -64,6 +144,8 @@ export let buildPlugin = () => {
       buildObj.buildMain()
       buildObj.preparePackageJson()
       buildObj.buildInstaller()
+      buildObj.prepareSqlite()
+      buildObj.prepareKnexjs()
     },
   }
 }

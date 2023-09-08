@@ -5,17 +5,22 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "rebuild": "electron-rebuild -f -w better-sqlite3"
   },
   "dependencies": {
+    "better-sqlite3": "^8.6.0",
     "electron-updater": "^6.1.4",
+    "fs-extra": "^11.1.1",
     "pinia": "^2.1.6",
     "vue": "^3.3.4"
   },
   "devDependencies": {
+    "@types/fs-extra": "^11.0.1",
     "@vitejs/plugin-vue": "^4.2.3",
     "electron": "^26.2.0",
     "electron-builder": "^24.6.4",
+    "electron-rebuild": "^3.2.9",
     "sass": "^1.66.1",
     "typescript": "^5.0.2",
     "vite": "^4.4.5",

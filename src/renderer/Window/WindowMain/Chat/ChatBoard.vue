@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import ChatSearch from './ChatSearch.vue'
-import ChatItem from './ChatItem.Vue'
+import ChatItem from './ChatItem.vue'
 import { useChatStore } from '../../../store/useChatStore'
 
 const store = useChatStore()
