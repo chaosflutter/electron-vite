@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BarLeft from '../Component/BarLeft.vue'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
 import { ipcRenderer } from 'electron'
 import { onMounted } from 'vue'

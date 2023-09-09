@@ -6,6 +6,7 @@
     "dev": "vite",
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
+    "lint:fix": "eslint --ext .ts,.vue,.js --fix ./src",
     "rebuild": "electron-rebuild -f -w better-sqlite3"
   },
   "dependencies": {
@@ -25,6 +26,7 @@
     "electron-rebuild": "^3.2.9",
     "eslint": "^8.49.0",
     "eslint-plugin-vue": "^9.17.0",
+    "knex": "^2.5.1",
     "sass": "^1.66.1",
     "typescript": "^5.0.2",
     "vite": "^4.4.5",

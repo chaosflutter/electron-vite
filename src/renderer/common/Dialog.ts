@@ -1,9 +1,9 @@
 //src\renderer\common\Dialog.ts
-export let createDialog = (url: string, config: any): Promise<Window> => {
+export const createDialog = (url: string, config: any): Promise<Window> => {
   return new Promise(resolve => {
     const windowProxy = window.open(url, '_blank', JSON.stringify(config))
     const readyHandler = (e: { data: { [index: string]: any } }) => {
-      let msg = e.data
+      const msg = e.data
       if (msg['msgName'] === `__dialogReady`) {
         window.removeEventListener('message', readyHandler)
         resolve(windowProxy!)
@@ -13,7 +13,7 @@ export let createDialog = (url: string, config: any): Promise<Window> => {
   })
 }
 
-export let dialogReady = () => {
-  let msg = { msgName: `__dialogReady` }
+export const dialogReady = () => {
+  const msg = { msgName: `__dialogReady` }
   window.opener.postMessage(msg)
 }

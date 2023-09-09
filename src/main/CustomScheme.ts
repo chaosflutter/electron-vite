@@ -4,7 +4,7 @@ import fs from 'fs'
 import path from 'path'
 
 //为自定义的app协议提供特权
-let schemeConfig = {
+const schemeConfig = {
   standard: true,
   supportFetchAPI: true,
   bypassCSP: true,
@@ -41,7 +41,7 @@ export class CustomScheme {
         pathName = 'index.html'
         extension = '.html'
       }
-      let tarFile = path.join(__dirname, pathName)
+      const tarFile = path.join(__dirname, pathName)
       callback({
         statusCode: 200,
         headers: { 'content-type': this.getMimeType(extension) },

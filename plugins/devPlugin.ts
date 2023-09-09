@@ -2,7 +2,7 @@
 import { ViteDevServer } from 'vite'
 import { AddressInfo } from 'net'
 
-export let devPlugin = () => {
+export const devPlugin = () => {
   return {
     name: 'dev-plugin',
     configureServer(server: ViteDevServer) {
@@ -14,10 +14,10 @@ export let devPlugin = () => {
         external: ['electron'],
       })
       server.httpServer?.once('listening', () => {
-        let { spawn } = require('child_process')
-        let addressInfo = server.httpServer?.address() as AddressInfo
-        let httpAddress = `http://localhost:${addressInfo?.port}`
-        let electronProcess = spawn(
+        const { spawn } = require('child_process')
+        const addressInfo = server.httpServer?.address() as AddressInfo
+        const httpAddress = `http://localhost:${addressInfo?.port}`
+        const electronProcess = spawn(
           require('electron').toString(),
           ['./dist/mainEntry.js', httpAddress],
           {
@@ -35,8 +35,8 @@ export let devPlugin = () => {
 }
 
 // plugins\devPlugin.ts
-export let getReplacer = () => {
-  let externalModels = [
+export const getReplacer = () => {
+  const externalModels = [
     'os',
     'fs',
     'path',
@@ -49,15 +49,15 @@ export let getReplacer = () => {
     'better-sqlite3',
     'knex',
   ]
-  let result: Record<string, () => void> = {}
-  for (let item of externalModels) {
+  const result: Record<string, () => void> = {}
+  for (const item of externalModels) {
     result[item] = () => ({
       find: new RegExp(`^${item}$`),
       code: `const ${item} = require('${item}');export { ${item} as default }`,
     })
   }
   result['electron'] = () => {
-    let electronModules = [
+    const electronModules = [
       'clipboard',
       'ipcRenderer',
       'nativeImage',

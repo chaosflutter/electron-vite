@@ -10,7 +10,7 @@ app.on('browser-window-created', (_, win) => {
 
 let mainWindow: BrowserWindow
 app.whenReady().then(() => {
-  let config = {
+  const config = {
     frame: false,
     webPreferences: {
       nodeIntegration: true,

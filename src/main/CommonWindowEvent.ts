@@ -70,9 +70,9 @@ export class CommonWindowEvent {
       }
       //开发者自定义窗口配置对象
       const features: IConfig = JSON.parse(param.features)
-      for (let p in features) {
+      for (const p in features) {
         if (p === 'webPreferences') {
-          for (let p2 in features.webPreferences) {
+          for (const p2 in features.webPreferences) {
             config.webPreferences[p2] = features.webPreferences[p2]
           }
         } else {

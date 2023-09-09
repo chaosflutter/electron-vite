@@ -16,9 +16,12 @@ class BuildObj {
   }
   //为生产环境准备package.json
   preparePackageJson() {
-    let pkgJsonPath = path.join(process.cwd(), 'package.json')
-    let localPkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf-8'))
-    let electronConfig = localPkgJson.devDependencies.electron.replace('^', '')
+    const pkgJsonPath = path.join(process.cwd(), 'package.json')
+    const localPkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf-8'))
+    const electronConfig = localPkgJson.devDependencies.electron.replace(
+      '^',
+      ''
+    )
     //版本号是否正确无关紧要
     localPkgJson.dependencies['better-sqlite3'] = '*'
     localPkgJson.dependencies['bindings'] = '*'
@@ -27,13 +30,13 @@ class BuildObj {
     delete localPkgJson.scripts
     delete localPkgJson.devDependencies
     localPkgJson.devDependencies = { electron: electronConfig }
-    let tarJsonPath = path.join(process.cwd(), 'dist', 'package.json')
+    const tarJsonPath = path.join(process.cwd(), 'dist', 'package.json')
     fs.writeFileSync(tarJsonPath, JSON.stringify(localPkgJson))
     fs.mkdirSync(path.join(process.cwd(), 'dist/node_modules'))
   }
   //使用electron-builder制成安装包
   buildInstaller() {
-    let options = {
+    const options = {
       config: {
         directories: {
           output: path.join(process.cwd(), 'release'),
@@ -52,6 +55,7 @@ class BuildObj {
           createStartMenuShortcut: true,
           shortcutName: 'juejinDesktop',
         },
+        extraResources: [{ from: `./db.db`, to: `./` }],
         publish: [{ provider: 'generic', url: 'http://localhost:5500/' }],
       },
       project: process.cwd(),
@@ -62,8 +66,8 @@ class BuildObj {
   //import fs from "fs-extra";
   async prepareSqlite() {
     //拷贝better-sqlite3
-    let srcDir = path.join(process.cwd(), `node_modules/better-sqlite3`)
-    let destDir = path.join(process.cwd(), `dist/node_modules/better-sqlite3`)
+    const srcDir = path.join(process.cwd(), `node_modules/better-sqlite3`)
+    const destDir = path.join(process.cwd(), `dist/node_modules/better-sqlite3`)
     fs.ensureDirSync(destDir)
     fs.copySync(srcDir, destDir, {
       filter: (src: string) => {
@@ -86,12 +90,12 @@ class BuildObj {
     )
     fs.writeFileSync(pkgJsonPath, pkgJson)
     //制作bindings模块
-    let bindingPath = path.join(
+    const bindingPath = path.join(
       process.cwd(),
       `dist/node_modules/bindings/index.js`
     )
     fs.ensureFileSync(bindingPath)
-    let bindingsContent = `module.exports = () => {
+    const bindingsContent = `module.exports = () => {
 let addonPath = require("path").join(__dirname, '../better-sqlite3/build/Release/better_sqlite3.node');
 return require(addonPath);
 };`
@@ -127,7 +131,7 @@ return require(addonPath);
         'better-sqlite3',
       ],
     })
-    let pkgJson = `{"name": "bindings","main": "index.js"}`
+    const pkgJson = `{"name": "bindings","main": "index.js"}`
     pkgJsonPath = path.join(
       process.cwd(),
       `dist/node_modules/knex/package.json`
@@ -136,11 +140,11 @@ return require(addonPath);
   }
 }
 
-export let buildPlugin = () => {
+export const buildPlugin = () => {
   return {
     name: 'build-plugin',
     closeBundle: () => {
-      let buildObj = new BuildObj()
+      const buildObj = new BuildObj()
       buildObj.buildMain()
       buildObj.preparePackageJson()
       buildObj.buildInstaller()
